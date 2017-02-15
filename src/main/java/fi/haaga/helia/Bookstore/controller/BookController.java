@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import fi.haaga.helia.Bookstore.entities.Book;
 import fi.haaga.helia.Bookstore.repository.BookRepository;
@@ -17,14 +18,26 @@ public class BookController {
 		@Autowired
 		private BookRepository repository;
 		
-		@RequestMapping(value = "/")
-		public String booklist(Model model) {
-			 List<Book> books = (List<Book>) repository.findAll();
-			
-			model.addAttribute("books", books);
-			
-	    	return "booklist";
+		@RequestMapping("/login")
+		public String login() {
+	    	return "login";
+	    }	
+		
+	    @RequestMapping(value="/")
+	    public String studentList(Model model) {	
+	        model.addAttribute("books", repository.findAll());
+	        return "booklist";
 	    }
+		
+	    @RequestMapping(value="/books", method = RequestMethod.GET)
+	    public @ResponseBody List<Book> BooklistRest() {	
+	        return (List<Book>) repository.findAll();
+	    }    
+	    
+	    @RequestMapping(value="/book/{id}", method = RequestMethod.GET)
+	    public @ResponseBody Book findbookRest(@PathVariable("id") Long bookId) {	
+	    	return repository.findOne(bookId);
+	    } 
 
 	    @RequestMapping(value = "add")
 	    public String addBook(Model model){
